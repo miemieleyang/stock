@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 引入数据库配置文件 -->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:mybatis/db.properties</value>
+                <!--要是有多个配置文件，只需在这里继续添加即可 -->
+            </list>
+        </property>
+    </bean>
+
+    <!--配置数据库源-->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <!-- 使用properties来配置 -->
+        <property name="driverClassName" value="${driver}">
+        </property>
+        <property name="url" value="${url}">
+        </property>
+        <property name="username" value="${username}">
+        </property>
+        <property name="password" value="${password}">
+        </property>
+    </bean>
+
+
+    <!-- 配置Mybatis的文件 ，mapperLocations配置XXXMapper.xml文件位置，
+    configLocation配置mybatis-config文件位置-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="mapperLocations" value="classpath:mybatis/mapping/*.xml"/>
+        <property name="configLocation" value="classpath:mybatis/mybatis-config.xml" />
+    </bean>
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="comstock.dao"/>
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </bean>
+
+
+    <!-- 自动扫描注解的bean -->
+    <context:component-scan base-package="comstock.*" />
+
+    <!-- 用eclipse的同学说不用配置该项（未验证），我也认为Mapper文件已经和接口对应起来了也不用配置的，
+   但是IDEA一直报错无法注入UserDao，增加该配置后就ok了。每一个Mapper都需要注入sqlSessionFactory和指定映射接口 -->
+    <!--    <bean id="StockDao" class="org.mybatis.spring.mapper.MapperFactoryBean">-->
+    <!--        <property name="sqlSessionTemplate" value="sqlSessionTemplate"/>-->
+    <!--        <property name="mapperInterface" value="comstock.dao.StockDao"/>-->
+    <!--    </bean>-->
+</beans>

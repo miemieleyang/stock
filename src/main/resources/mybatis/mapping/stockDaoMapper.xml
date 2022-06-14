@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="comstock.dao.StockDao">
+    <!-- 自定义结果集 -->
+    <resultMap type="comstock.domain.Stock" id="stockResultMap">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="stockCode" column="stockCode" jdbcType="VARCHAR" />
+        <result property="stockName" column="stockName" jdbcType="VARCHAR"/>
+        <result property="stockPrice" column="stockPrice" jdbcType="DOUBLE"/>
+        <result property="stockMarketValue" column="stockMarketValue" jdbcType="DOUBLE"/>
+    </resultMap>
+    <!-- 查询 -->
+    <select id="selectStock" parameterType="string" resultType="comstock.domain.Stock">
+        select *
+        from stockInfo where stockCode like ('%',#{stockCode},'%')
+    </select>
+    <!-- 新增 -->
+    <insert id="addStock" useGeneratedKeys="true" keyProperty="id">
+        insert
+        into stockInfo(stockCode,stockName,stockPrice,stockMarketValue)
+        values(#{stockCode},#{stockName},#{stockPrice},#{stockMarketValue})
+    </insert>
+    <!-- 更新 -->
+    <update id="updateStock" parameterType="comstock.domain.Stock">
+        update stockInfo
+        set
+        stockName=#{stockName}, stockPrice=#{stockPrice}, stockMarketValue=#{stockMarketValue}
+        where stockCode=#{stockCode}
+    </update>
+    <!-- 删除 -->
+    <delete id="deleteStock" parameterType="int">
+        delete from stockInfo where
+        stockCode=#{stockCode}
+    </delete>
+
+    <delete id="deleteAll">
+        delete from stockInfo
+    </delete>
+</mapper>
